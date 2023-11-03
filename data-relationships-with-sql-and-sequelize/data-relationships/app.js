@@ -22,22 +22,66 @@ console.log('Testing the connection to the database...');
 (async () => {
   try {
     // Test the connection to the database
+    await sequelize.authenticate();
     console.log('Connection to the database successful!');
 
-    // Sync the models
+    // Sync the models - this drops tables in the DB and created every time app starts
     console.log('Synchronizing the models with the database...');
+    await sequelize.sync({ force: true });
 
     // Add People to the Database
     console.log('Adding people to the database...');
+    // await Promise.all reuturns a resolved pormise containing all of the Person model instances we created
+    const peopleInstances = await Promise.all([
+      Person.create({
+        firstName: 'Brad',
+        lastName: 'Bird',
+      }),
+      Person.create({
+        firstName: 'Vin',
+        lastName: 'Diesel',
+      }),
+      Person.create({
+        firstName: 'Eli',
+        lastName: 'Marienthal',
+      }),
+      Person.create({
+        firstName: 'Craig T.',
+        lastName: 'Nelson',
+      }),
+      Person.create({
+        firstName: 'Holly',
+        lastName: 'Hunter',
+      }),
+    ]);
+    console.log(JSON.stringify(peopleInstances, null, 2));
   
     // Update the global variables for the people instances
+    [bradBird, vinDiesel, eliMarienthal, craigTNelson, hollyHunter] = peopleInstances;
 
     // Add Movies to the Database
     console.log('Adding movies to the database...');
+    const movieInstances = await Promise.all([
+      Movie.create({
+        title: 'The Iron Giant',
+        releaseYear: 1999,
+        directorPersonId: bradBird.id,
+      }),
+      Movie.create({
+        title: 'The Incredibles',
+        releaseYear: 2004,
+        directorPersonId: bradBird.id,
+      }),
+    ]); 
+    console.log(JSON.stringify(movieInstances, null, 2));
 
     // Retrieve movies
-
+    const movies = await Movie.findAll();
+    console.log(movies.map(movie => movie.get({ plain: true })));
+    
     // Retrieve people
+    const people = await Person.findAll();
+    console.log(people.map(person => person.get({ plain: true })));
 
     process.exit();
   } catch (error) {
