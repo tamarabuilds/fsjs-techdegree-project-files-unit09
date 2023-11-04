@@ -23,6 +23,7 @@ module.exports = (sequelize) => {
     // TODO Add associations.
     // Tells Sequelize that a movie can be associated with only one person
     Movie.belongsTo(models.Person, { 
+      as: 'director',     // alias
       foreignKey: {
         fieldName: 'directorPersonId',
         allowNull: false,

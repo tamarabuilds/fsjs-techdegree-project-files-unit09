@@ -76,13 +76,29 @@ console.log('Testing the connection to the database...');
     console.log(JSON.stringify(movieInstances, null, 2));
 
     // Retrieve movies
-    const movies = await Movie.findAll();
+    const movies = await Movie.findAll({
+      // passing include property says we want any related Person model data
+      include: [
+        {
+          model: Person,
+          as: 'director',
+        }
+      ]
+    });
     console.log(movies.map(movie => movie.get({ plain: true })));
     
     // Retrieve people
-    const people = await Person.findAll();
-    console.log(people.map(person => person.get({ plain: true })));
+    const people = await Person.findAll({
+      include: [
+        {
+          model: Movie,
+          as: 'director',
+        }]
+      });
+      // console.log(people.map(person => person.get({ plain: true })));
+      console.log(JSON.stringify(people, null, 2));
 
+    // tells Node.js to terminate the process immediately
     process.exit();
   } catch (error) {
     if (error.name === 'SequelizeValidationError') {
